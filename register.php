@@ -1,4 +1,3 @@
-
 <?php
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -35,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         require __DIR__ . '/dbConnect.php';
 
         // Check if email address exists
-        $sql          = "SELECT * FROM users WHERE email = ?";
+        $sql = "SELECT * FROM users WHERE email = ?";
         $pdoStatement = $pdo->prepare($sql);
 
         $pdoStatement->execute([$email]);
@@ -61,8 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
-}
-?>
+} ?>
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
     <head>
