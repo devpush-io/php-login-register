@@ -30,6 +30,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Password must be at least 8 characters';
         $passwordInvalid = true;
     }
+
+    if (empty($errors)) {
+        require __DIR__ . '/dbConnect.php';
+
+        // Check if email address exists
+        $sql          = "SELECT * FROM users WHERE email = ?";
+        $pdoStatement = $pdo->prepare($sql);
+
+        $pdoStatement->execute([$email]);
+        $result = $pdoStatement->fetch(PDO::FETCH_ASSOC);
+
+        if ($result) {
+            // Email already exists, show error
+            $errors[] = 'Email address is already used for a user account';
+        } else {
+            // Add user to database
+            $password = password_hash($password, PASSWORD_DEFAULT);
+
+            $sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
+            $pdoStatement = $pdo->prepare($sql);
+
+            $result = $pdoStatement->execute([$name, $email, $password]);
+
+            if ($result) {
+                header('Location: /?msg=New user has been registered');
+                exit;
+            } else {
+                $errors[] = 'Error registering new user';
+            }
+        }
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -42,55 +73,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Pico CSS faremwork
             https://picocss.com
         -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css" />
     </head>
     <body>
         <main>
             <h1>Register Form</h1>
-            <div>
+            <div style="max-width: 600px">
                 <?php
-                if (empty($errors) == false) {
-                    foreach ($errors as $error) { ?>
-                        <span><?= $error ?></span>
+                if (empty($errors) == false) { ?>
+                    <article class="pico-background-red-500 pico-color-white-50">
+                        <?php
+                        foreach ($errors as $error) { ?>
+                            <span><?= $error ?></span>
+                        <?php
+                        } ?>
+                    </article>
                     <?php
-                    }
                 } ?>
-            </div>
-            <form action="/register.php" method="post" style="max-width: 400px">
-                <div>
-                    <label for="name">Name</label>
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value="<?= $name ?? '' ?>"
-                        aria-invalid="<?= $nameInvalid ? 'true' : 'false' ?>"
-                        required />
+                <form action="/register.php" method="post">
+                    <div>
+                        <label for="name">Name</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            value="<?= $name ?? '' ?>"
+                            aria-invalid="<?= $nameInvalid ? 'true' : 'false' ?>"
+                            required />
+                    </div>
+                    <div>
+                        <label for="email">Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value="<?= $email ?? '' ?>"
+                            aria-invalid="<?= $emailInvalid ? 'true' : 'false' ?>"
+                            required />
+                    </div>
+                    <div>
+                        <label for="password">Password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            value="<?= $password ?? '' ?>"
+                            aria-invalid="<?= $passwordInvalid ? 'true' : 'false' ?>"
+                            required />
+                    </div>
+                    <input type="submit" value="Submit" />
+                </form>
+                <div">
+                    <a href="/">Go back</a>
                 </div>
-                <div>
-                    <label for="email">Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value="<?= $email ?? '' ?>"
-                        aria-invalid="<?= $emailInvalid ? 'true' : 'false' ?>"
-                        required />
-                </div>
-                <div>
-                    <label for="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        value="<?= $password ?? '' ?>"
-                        aria-invalid="<?= $passwordInvalid ? 'true' : 'false' ?>"
-                        required />
-                </div>
-                <input type="submit" value="Submit" />
-            </form>
-            <div">
-                <a href="/">Go back</a>
             </div>
         </main>
     </body>
