@@ -59,27 +59,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </article>
                     <?php
                 } ?>
+                <form action="/login.php" method="post">
+                    <div>
+                        <label for="email">Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value="<?= $email ?? '' ?>"
+                            required />
+                    </div>
+                    <div>
+                        <label for="password">Password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            required />
+                    </div>
+                    <input type="submit" value="Submit" />
+                </form>
             </div>
-            <form action="/login.php" method="post">
-                <div>
-                    <label for="email">Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value="<?= $email ?? '' ?>"
-                        required />
-                </div>
-                <div>
-                    <label for="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        required />
-                </div>
-                <input type="submit" value="Submit" />
-            </form>
             <div>
                 <a href="/">Go back</a>
             </div>
